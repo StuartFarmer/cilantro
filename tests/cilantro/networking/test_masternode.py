@@ -15,16 +15,35 @@ class MockSerializer(Serializer):
         return [arg for arg in args]
 
 class TestMasternode(TestCase):
+    def setUp(self):
+        '''Factor out commonly used code for these tests'''
+
+        self.host = '127.0.0.1'
+        self.internal_port = '9999'
+        self.external_port = '8080'
+        self.serializer = MockSerializer
+        self.m = Masternode(host=self.host, internal_port=self.host, external_port = self.external_port, serializer = self.serializer)
+        self.mock_data = {'payload': {'to': 'satoshi', 'amount': '100', 'from': 'nakamoto'}, 'metadata': {'sig':'x287', 'proof': '000'}}
+
     def test_host_and_port_storage(self):
-        HOST = '127.0.0.1'
-        PORT = '9999'
-        m = Masternode(host=HOST, internal_port=PORT)
-        self.assertEqual(m.host, HOST)
-        self.assertEqual(m.internal_port, PORT)
+        self.assertEqual(self.m.host, self.host)
+        self.assertEqual(self.m.internal_port, self.internal_port)
+        self.assertEqual(self.m.external_port, self.external_port)
 
     def test_serialization_storage(self):
         m = Masternode(serializer=MockSerializer)
         self.assertEqual(type(m.serializer), type(MockSerializer))
+
+    def test_process_transaction(self):
+        self.m.process_transaction(self.mock_data)
+
+    def test_validate_transaction(self):
+        return True
+
+
+
+
+
 
 class TestMasternodeAsync(AioHTTPTestCase):
     async def get_application(self):

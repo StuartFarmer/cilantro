@@ -31,7 +31,7 @@ class Masternode(object):
         try:
             d = self.serializer.serialize(data)
         except:
-            return {'status': 'Could not serialize transaction' }
+            return {'status': 'Could not serialize transaction'}
 
         try:
             self.publisher.bind(self.url)
@@ -41,7 +41,13 @@ class Masternode(object):
         finally:
             self.publisher.unbind(self.url)
 
-        return { 'status' : '{} successfully published to the network'.format(d) }
+        return {'status': '{} successfully published to the network'.format(d)}
+
+    def validate_transaction(self, data):
+        '''Validation function for the payload of the request, the transaction data
+
+        Inputs: data extracted from the Transaction's POST payload '''
+        return True
 
     async def process_request(self, request):
         r = self.process_transaction(await request.content.read())
